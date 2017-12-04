@@ -1,7 +1,10 @@
 import time
 import urllib.request
 from twisted.internet import reactor, defer
-from twisted.web.client import Agent
+import treq
+# Note: treq uses cryptography for TLS, if you encounter errors on TLS
+# related to OpenSSL check the cryptography installation docs
+# https://cryptography.io/en/latest/installation/
 
 
 URL = 'https://api.github.com/events'
@@ -23,15 +26,15 @@ def fetch_sync(pid):
 async def fetch_async(pid):
     print('Fetch async process {} started'.format(pid))
     start = time.time()
-    agent = Agent(reactor)
-    # method, url, headers, body
-    response = await agent.request(b'GET', URL.encode(), None, None)
-    datetime = response.headers.headers.getRawHeaders('Date')
+    response = await treq.get(URL)
+    # unfortunately Twisted's Agent which treq is base on does not expose
+    # connection headers so we cannot get the Date header in the same way
+    # https://github.com/twisted/treq/issues/56#issuecomment-36573795
+    datetime = response.headers.getRawHeaders('Date', '<MISSING>')
 
     print('Process {}: {}, took: {:.2f} seconds'.format(
         pid, datetime, time.time() - start))
 
-    response.close()
     return datetime
 
 
