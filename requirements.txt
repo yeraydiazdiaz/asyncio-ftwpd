@@ -2,3 +2,4 @@ wheel
 gevent==1.1a2
 tornado
 aiohttp==0.21.1
+treq

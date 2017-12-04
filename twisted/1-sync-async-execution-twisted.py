@@ -22,6 +22,8 @@ def bar():
 
 foo_deferred = foo()
 bar_deferred = bar()
+# this is not strictly necessary, the deferreds will be executed without it
+# but we do need it in order to stop the reactor only when all deferreds are done
 deferred_list = defer.gatherResults([foo_deferred, bar_deferred])
 deferred_list.addCallback(lambda _: reactor.stop())
 reactor.run()
