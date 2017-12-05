@@ -30,10 +30,10 @@ async def fetch_async(pid):
     # unfortunately Twisted's Agent which treq is base on does not expose
     # connection headers so we cannot get the Date header in the same way
     # https://github.com/twisted/treq/issues/56#issuecomment-36573795
-    datetime = response.headers.getRawHeaders('Date', '<MISSING>')
+    content_type = response.headers.getRawHeaders('Content-Type', '<MISSING>')
 
     print('Process {}: {}, took: {:.2f} seconds'.format(
-        pid, datetime, time.time() - start))
+        pid, content_type, time.time() - start))
 
     return datetime
 
