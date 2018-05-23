@@ -7,6 +7,12 @@ URL = 'https://api.github.com/events'
 MAX_CLIENTS = 3
 
 
+async def aiohttp_get(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            return response
+
+
 async def fetch_async(pid):
     start = time.time()
     sleepy_time = random.randint(2, 5)
@@ -15,7 +21,7 @@ async def fetch_async(pid):
 
     await asyncio.sleep(sleepy_time)
 
-    response = await aiohttp.request('GET', URL)
+    response = await aiohttp_get(URL)
     datetime = response.headers.get('Date')
 
     response.close()

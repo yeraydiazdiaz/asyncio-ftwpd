@@ -12,15 +12,19 @@ SERVICES = (
 )
 
 
+async def aiohttp_get_json(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            return await response.json()
+
+
 async def fetch_ip(service):
     start = time.time()
     print('Fetching IP from {}'.format(service.name))
 
-    response = await aiohttp.request('GET', service.url)
-    json_response = await response.json()
+    json_response = await aiohttp_get_json(service.url)
     ip = json_response[service.ip_attr]
 
-    response.close()
     return '{} finished with result: {}, took: {:.2f} seconds'.format(
         service.name, ip, time.time() - start)
 

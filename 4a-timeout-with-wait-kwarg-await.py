@@ -16,20 +16,24 @@ SERVICES = (
 DEFAULT_TIMEOUT = 0.01
 
 
+async def aiohttp_get_json(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            return await response.json()
+
+
 async def fetch_ip(service):
     start = time.time()
     print('Fetching IP from {}'.format(service.name))
 
     await asyncio.sleep(random.randint(1, 3) * 0.1)
     try:
-        response = await aiohttp.request('GET', service.url)
+        json_response = await aiohttp_get_json(service.url)
     except:
         return '{} is unresponsive'.format(service.name)
 
-    json_response = await response.json()
     ip = json_response[service.ip_attr]
 
-    response.close()
     print('{} finished with result: {}, took: {:.2f} seconds'.format(
         service.name, ip, time.time() - start))
     return ip
