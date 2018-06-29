@@ -13,8 +13,9 @@ async def bar():
     print('Implicit context switch back to bar')
 
 
-ioloop = asyncio.get_event_loop()
-tasks = [ioloop.create_task(foo()), ioloop.create_task(bar())]
-wait_tasks = asyncio.wait(tasks)
-ioloop.run_until_complete(wait_tasks)
-ioloop.close()
+async def main():
+    tasks = [foo(), bar()]
+    await asyncio.gather(*tasks)
+
+
+asyncio.run(main())

@@ -32,11 +32,9 @@ async def fetch_ip(service):
             service.name, ip, time.time() - start))
 
 
-async def asynchronous():
+async def main():
     futures = [fetch_ip(service) for service in SERVICES]
     await asyncio.wait(futures)  # intentionally ignore results
 
 
-ioloop = asyncio.get_event_loop()
-ioloop.run_until_complete(asynchronous())
-ioloop.close()
+asyncio.run(main())

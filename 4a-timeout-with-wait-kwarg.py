@@ -39,7 +39,7 @@ async def fetch_ip(service):
     return ip
 
 
-async def asynchronous(timeout):
+async def main(timeout):
     response = {
         "message": "Result from asynchronous.",
         "ip": "not available"
@@ -66,6 +66,4 @@ parser.add_argument(
 args = parser.parse_args()
 
 print("Using a {} timeout".format(args.timeout))
-ioloop = asyncio.get_event_loop()
-ioloop.run_until_complete(asynchronous(args.timeout))
-ioloop.close()
+asyncio.run(main(args.timeout))
