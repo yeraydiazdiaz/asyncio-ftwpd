@@ -1,7 +1,9 @@
 from collections import namedtuple
 import time
-import asyncio
-import aiohttp
+import trio
+import asks
+
+asks.init('trio')
 
 Service = namedtuple('Service', ('name', 'url', 'ip_attr'))
 
@@ -11,18 +13,13 @@ SERVICES = (
     Service('borken', 'http://no-way-this-is-going-to-work.com/json', 'ip')
 )
 
-async def aiohttp_get_json(url):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            return await response.json()
-
-
 async def fetch_ip(service):
     start = time.time()
     print('Fetching IP from {}'.format(service.name))
 
     try:
-        json_response = await aiohttp_get_json(service.url)
+        response = await asks.get(service.url)
+        json_response = response.json()
     except:
         print('{} is unresponsive'.format(service.name))
     else:
@@ -32,11 +29,14 @@ async def fetch_ip(service):
             service.name, ip, time.time() - start))
 
 
-async def asynchronous():
-    futures = [fetch_ip(service) for service in SERVICES]
-    await asyncio.wait(futures)  # intentionally ignore results
+async def main():
+    """
+    This example showcases how exceptions in Trio bubble to the parent
+    and will stop the program, while in asyncio it will simply log a warning.
+    """
+    async with trio.open_nursery() as nursery:
+        for service in SERVICES:
+            nursery.start_soon(fetch_ip, service)
 
 
-ioloop = asyncio.get_event_loop()
-ioloop.run_until_complete(asynchronous())
-ioloop.close()
+trio.run(main)

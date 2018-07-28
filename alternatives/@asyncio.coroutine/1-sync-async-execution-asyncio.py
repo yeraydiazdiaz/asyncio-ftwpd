@@ -1,15 +1,17 @@
 import asyncio
 
 
-async def foo():
+@asyncio.coroutine
+def foo():
     print('Running in foo')
-    await asyncio.sleep(0)
+    yield from asyncio.sleep(0)
     print('Explicit context switch to foo again')
 
 
-async def bar():
+@asyncio.coroutine
+def bar():
     print('Explicit context to bar')
-    await asyncio.sleep(0)
+    yield from asyncio.sleep(0)
     print('Implicit context switch back to bar')
 
 

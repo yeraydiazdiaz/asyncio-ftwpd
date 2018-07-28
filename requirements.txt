@@ -2,3 +2,5 @@ wheel
 gevent==1.3.4
 tornado
 aiohttp==3.2.1
+trio
+asks

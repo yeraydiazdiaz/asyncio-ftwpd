@@ -12,24 +12,26 @@ SERVICES = (
 )
 
 
-@asyncio.coroutine
-def fetch_ip(service):
+async def aiohttp_get_json(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            return await response.json()
+
+
+async def fetch_ip(service):
     start = time.time()
     print('Fetching IP from {}'.format(service.name))
 
-    response = yield from aiohttp.request('GET', service.url)
-    json_response = yield from response.json()
+    json_response = await aiohttp_get_json(service.url)
     ip = json_response[service.ip_attr]
 
-    response.close()
     return '{} finished with result: {}, took: {:.2f} seconds'.format(
         service.name, ip, time.time() - start)
 
 
-@asyncio.coroutine
-def asynchronous():
+async def asynchronous():
     futures = [fetch_ip(service) for service in SERVICES]
-    done, pending = yield from asyncio.wait(
+    done, pending = await asyncio.wait(
         futures, return_when=FIRST_COMPLETED)
 
     print(done.pop().result())

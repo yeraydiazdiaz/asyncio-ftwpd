@@ -4,7 +4,7 @@ import asyncio
 import aiohttp
 
 URL = 'https://api.github.com/events'
-MAX_CLIENTS = 3
+MAX_CLIENTS = 10
 
 
 def fetch_sync(pid):
@@ -19,17 +19,11 @@ def fetch_sync(pid):
     return datetime
 
 
-async def aiohttp_get(url):
-    """Nothing to see here, carry on ..."""
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            return response
-
-
-async def fetch_async(pid):
+@asyncio.coroutine
+def fetch_async(pid):
     print('Fetch async process {} started'.format(pid))
     start = time.time()
-    response = await aiohttp_get(URL)
+    response = yield from aiohttp.request('GET', URL)
     datetime = response.headers.get('Date')
 
     print('Process {}: {}, took: {:.2f} seconds'.format(
@@ -46,11 +40,12 @@ def synchronous():
     print("Process took: {:.2f} seconds".format(time.time() - start))
 
 
-async def asynchronous():
+@asyncio.coroutine
+def asynchronous():
     start = time.time()
     tasks = [asyncio.ensure_future(
         fetch_async(i)) for i in range(1, MAX_CLIENTS + 1)]
-    await asyncio.wait(tasks)
+    yield from asyncio.wait(tasks)
     print("Process took: {:.2f} seconds".format(time.time() - start))
 
 

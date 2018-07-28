@@ -1,0 +1,5 @@
+.DS_Store
+.vscode/
+.python-version
+__pycache__
+*.py[c|o]

@@ -11,11 +11,12 @@ def task(pid):
     print('Task %s done' % pid)
 
 
-async def task_coro(pid):
+@asyncio.coroutine
+def task_coro(pid):
     """Coroutine non-deterministic task
 
     """
-    await asyncio.sleep(random.randint(0, 2) * 0.001)
+    yield from asyncio.sleep(random.randint(0, 2) * 0.001)
     print('Task %s done' % pid)
 
 
@@ -24,9 +25,10 @@ def synchronous():
         task(i)
 
 
-async def asynchronous():
-    tasks = [asyncio.ensure_future(task_coro(i)) for i in range(1, 10)]
-    await asyncio.wait(tasks)
+@asyncio.coroutine
+def asynchronous():
+    tasks = [asyncio.async(task_coro(i)) for i in range(1, 10)]
+    yield from asyncio.wait(tasks)
 
 
 print('Synchronous:')
