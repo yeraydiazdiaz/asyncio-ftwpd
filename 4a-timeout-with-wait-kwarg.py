@@ -45,7 +45,7 @@ async def main(timeout):
         "ip": "not available"
     }
 
-    futures = [fetch_ip(service) for service in SERVICES]
+    futures = [asyncio.create_task(fetch_ip(service)) for service in SERVICES]
     done, pending = await asyncio.wait(
         futures, timeout=timeout, return_when=FIRST_COMPLETED)
 
